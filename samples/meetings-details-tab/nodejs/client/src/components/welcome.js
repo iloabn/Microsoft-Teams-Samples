@@ -1,10 +1,26 @@
 import * as microsoftTeams from "@microsoft/teams-js";
 import React,{useState, useEffect} from "react";
 import Agenda from './Agenda';
+import Party from './Party';
 import {v4 as uuidv4  } from "uuid";
 
 function Welcome (){
     const [agendaList, setAgenda]= useState([]);
+    const [partList, setPartList] = useState([]);
+
+    const loadPartList = async () => {
+        const response = await fetch("/api/getPartList", {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const textData = await response.text();
+        if(textData.length) {
+            const data = JSON.parse(textData);
+            setPartList(data);
+        }
+    }
 
     useEffect(() => {
         const loadAgenda = async () => {
@@ -21,6 +37,10 @@ function Welcome (){
             }
         };
         loadAgenda();
+        console.log("AGENDA LOADED")
+        loadPartList();
+        const comInterval = setInterval(loadPartList, 10 * 1000);
+        return () => clearInterval(comInterval)
     }, []);
 
     const setAgendaList = (list) => {
@@ -61,12 +81,18 @@ function Welcome (){
     }
     
     return (
+        <>
+        <h1>Välkommen rösträknare!</h1>
         <div>
-            <button type="button" id="btnAddAgenda" class="btn btn-outline-info" onClick={() => openTaskModule()}>Add Agenda</button>
+            <button type="button" id="btnAddAgenda" class="btn btn-outline-info" onClick={() => openTaskModule()}>Skapa ny röstning</button>
             {
                agendaList && agendaList.map(x=> <Agenda {...x} taskList = {agendaList}/>)
             }
+            {
+                partList && partList.map(x => <Party {...x} partyList={partList}/>)
+            }
         </div>
+        </>
     )
 }
 

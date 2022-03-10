@@ -6,7 +6,7 @@ const Config = () => {
         microsoftTeams.settings.setSettings({
             contentUrl: baseUrl + "/",
             entityId: "DetailsTab",
-            suggestedDisplayName: "DetailsTab",
+            suggestedDisplayName: "Röstning",
             websiteUrl: baseUrl + "/",
         });
         saveEvent.notifySuccess();

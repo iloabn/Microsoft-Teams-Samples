@@ -18,7 +18,7 @@ const Detail = () => {
                     <tr>
                         <td>
                             <label>
-                                <b> Title: </b>
+                                <b> Fråga att rösta om: </b>
                             </label>
                         </td>
                         <td>
@@ -28,7 +28,7 @@ const Detail = () => {
                     <tr>
                         <td>
                             <label>
-                                <b> Choice 1: </b>
+                                <b> Alternativ 1: </b>
                             </label>
                         </td>
                         <td>
@@ -38,7 +38,7 @@ const Detail = () => {
                    <tr>
                         <td>
                             <label>
-                                <b> Choice 2: </b>
+                                <b> Alternativ 2: </b>
                             </label>
                         </td>
                         <td>

@@ -2,37 +2,61 @@
 // Licensed under the MIT License.
 
 const {
-    TeamsActivityHandler
+    TeamsActivityHandler,
+    MessageFactory
 } = require('botbuilder');
+const { ConnectorClient, MicrosoftAppCredentials } = require('botframework-connector');
 const store = require('../services/store');
 const { createAdaptiveCard } = require('../services/AdaptiveCardService');
+const credentials = new MicrosoftAppCredentials(process.env.BotId, process.env.BotPassword);
 
 class BotActivityHandler extends TeamsActivityHandler {
     constructor() {
         super();
         this.onConversationUpdate(async (context, next) => {
+            console.log(JSON.stringify(context.activity));
             store.setItem("conversationId", context.activity.conversation.id);
-            store.setItem ("serviceUrl", context.activity.serviceUrl);
+            store.setItem("serviceUrl", context.activity.serviceUrl);
+
+            console.log("Create client");
+            const client = new ConnectorClient(credentials, { baseUri: context.activity.serviceUrl });
+            console.log("Get all members");
+            const members = await client.conversations.getConversationMembers(context.activity.conversation.id);
+            console.log(JSON.stringify(members));
+
+            const newPartList = members.map((part) => {
+                return { id: part.id, personName: part.name, votes: 0 };
+            });
+            store.setItem("partList", newPartList)
+
+            console.log(newPartList);
+
+            /**
+             * [{"id":"29:1hWH7TXQEbNDxR2n0CVDDIimfWX0yS4wrArQAM279NENfxyOkRrWcA6sjOFvUFtpnyDg3DPUC-5pmQZ4knB5gfg","name":"Fabian Miiro","objectId":"51a7c595-4695-4e42-bdce-0103141d1ccf","givenName":"Fabian","surname":"Miiro","email":"fabian.miiro@stockholmpride.org","userPrincipalName":"fabian.miiro@stockholmpride.org","tenantId":"f06e04fb-560b-4235-a626-0d4b87a472b3","userRole":"user"},{"id":"29:1_WId0404nVw7sL8XKjYSd8omxTLDY4eZBApW9NptwkjhN77HqxjWmXnqAqP957Wr6VITNfNbrRg2H4vWPQeUUA","name":"Someone else (Guest)","tenantId":"f06e04fb-560b-4235-a626-0d4b87a472b3","userRole":"anonymous"}]
+             */
         });
-        
+
         this.onMessage(async (context, next) => {
             const userName = context.activity.from.name;
             const data = context.activity.value;
             const answer = data.Feedback;
-            
-            
+
+            console.log("Activity value ", JSON.stringify(data));
+            console.log("User: ", context.activity.from);
+            console.log("Reply to: ", context.activity.replyToId);
+
             const taskInfoList = store.getItem("agendaList");
-            const taskInfo = taskInfoList.find(x=> x.Id === data.Choice);
+            const taskInfo = taskInfoList.find(x => x.Id === data.Choice);
             let personAnswered = taskInfo.personAnswered;
-            if(!personAnswered){
+            if (!personAnswered) {
                 const obj = {};
                 obj[answer] = [userName];
                 personAnswered = obj;
-            }else {
-                if(personAnswered[answer]){
+            } else {
+                if (personAnswered[answer]) {
                     personAnswered[answer].push(userName);
                 }
-                else{
+                else {
                     personAnswered[answer] = [userName];
                 }
             }
@@ -44,38 +68,49 @@ class BotActivityHandler extends TeamsActivityHandler {
 
 
             const total = option1Answered + option2Answered;
-            const percentOption1 = total == 0 ? 0 : parseInt(( option1Answered * 100 ) / total);
+            const percentOption1 = total == 0 ? 0 : parseInt((option1Answered * 100) / total);
             const percentOption2 = total == 0 ? 0 : 100 - percentOption1;
-            
+
             const card = createAdaptiveCard("Result.json", taskInfo, percentOption1, percentOption2);
-            await context.sendActivity({attachments: [card]});
+
+            const previousActivityId = store.getItem("lastActivityId");
+            console.log(previousActivityId);
+            if (previousActivityId) {
+                const message = MessageFactory.attachment(card);
+                message.id = previousActivityId;
+                await context.updateActivity(message);
+            } else {
+                const result = await context.sendActivity({ attachments: [card] });
+                store.setItem("lastActivityId", result.id);
+            }
+
         });
     }
 
     handleTeamsTaskModuleFetch(context, request) {
-            const Id = request.data.Id;
-            let taskInfo = {
-                title: null,
-                height: null,
-                width: null,
-                url: null,
-                card: null,
-                fallbackUrl: null,
-                completionBotId: null,
-            };
-                taskInfo.url = process.env.BaseUrl +"/Result?id="+Id;
-                taskInfo.title = "Result";
-                taskInfo.height = 250;
-                taskInfo.width = 500;
-                taskInfo.fallbackUrl = taskInfo.url
+        const Id = request.data.Id;
+        let taskInfo = {
+            title: null,
+            height: null,
+            width: null,
+            url: null,
+            card: null,
+            fallbackUrl: null,
+            completionBotId: null,
+        };
+        taskInfo.url = process.env.BaseUrl + "/Result?id=" + Id;
+        taskInfo.title = "Result";
+        taskInfo.height = 250;
+        taskInfo.width = 500;
+        taskInfo.fallbackUrl = taskInfo.url
 
-                return {
-                    task: {
-                        type: 'continue',
-                        value: taskInfo
-                    }
-                };
-        }
+        return {
+            task: {
+                type: 'continue',
+                value: taskInfo
+            }
+        };
+    }
 }
 
 module.exports.BotActivityHandler = BotActivityHandler;

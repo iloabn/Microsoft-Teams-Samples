@@ -9,6 +9,8 @@ const credentials = new MicrosoftAppCredentials(process.env.BotId,process.env.Bo
     store.setItem("agendaList", data.taskList);
     const conversationID = store.getItem("conversationId");
     const serviceUrl = store.getItem("serviceUrl");
+    console.log("SERVICE URL: ", serviceUrl);
+    console.log("CONVERSATION ID: ", serviceUrl);
     const client = new ConnectorClient(credentials, { baseUri: serviceUrl });
     const adaptiveCard = createAdaptiveCard('Poll.json', data.taskInfo)
         try{
@@ -30,8 +32,29 @@ const credentials = new MicrosoftAppCredentials(process.env.BotId,process.env.Bo
   const setAgendaList = async (req, res) => {
     store.setItem("agendaList", req.body);
   }
+
+  const getPartList = async (req, res) => {
+    const currentPartyList = store.getItem("partList");
+    console.log("GOT PARTY LIST: ", currentPartyList);
+    await res.send(currentPartyList);
+
+  };
+  const setPartList = async (req, res) => {
+    console.log(JSON.stringify(req.body));
+    console.log("Trying to save a new value");
+    const partyList = store.getItem("partList");
+    const indexOfParty = partyList.findIndex((x) => x.id == req.body.id);
+    partyList[indexOfParty].votes = req.body.votes;
+    
+    console.log(JSON.stringify(partyList));
+    store.setItem("partList", partyList);
+    res.status(200).end();
+  };
+
   module.exports ={
     sendAgenda,
     getAgendaList,
-    setAgendaList
+    setAgendaList,
+    getPartList,
+    setPartList
   }
