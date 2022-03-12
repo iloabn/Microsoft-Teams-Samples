@@ -85,12 +85,18 @@ function Welcome (){
         <h1>Välkommen rösträknare!</h1>
         <div>
             <button type="button" id="btnAddAgenda" class="btn btn-outline-info" onClick={() => openTaskModule()}>Skapa ny röstning</button>
+            <h2>Röstningar</h2>
+            <div className="flexbox-container">
             {
                agendaList && agendaList.map(x=> <Agenda {...x} taskList = {agendaList}/>)
             }
+            </div>
+            <h2>Registrerade deltagare</h2>
+            <div className="flexbox-container">
             {
                 partList && partList.map(x => <Party {...x} partyList={partList}/>)
             }
+            </div>
         </div>
         </>
     )

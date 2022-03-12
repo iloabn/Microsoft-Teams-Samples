@@ -1,5 +1,4 @@
-import * as microsoftTeams from "@microsoft/teams-js";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 function Party (props) {
     const [currentVote, setCurrentVote] = useState(props.votes);
     const [personName] = useState(props.personName);
@@ -8,7 +7,7 @@ function Party (props) {
     const sendPartyUpdate = async (newVotes) => {
         setSaveDisabled(true);
         
-        const partyInfo = props.partyList.find(x => x.Id == props.Id);
+        const partyInfo = props.partyList.find(x => x.Id === props.Id);
         partyInfo.votes = newVotes;
         fetch("/api/sendPart", {
             method: 'POST',
