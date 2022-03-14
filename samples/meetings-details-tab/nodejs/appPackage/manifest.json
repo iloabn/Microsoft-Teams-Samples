@@ -1,8 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.9/MicrosoftTeams.schema.json",
   "manifestVersion": "1.9",
-  "version": "1.0.0",
-  "id": "<<Microsoft-APP-ID>>",
+  "version": "1.0.3",
+  "id": "3f4ded50-4461-4859-8ca5-831bfcba232e",
   "packageName": "com.microsoft.teams.sample.meetingdetailstab",
   "showLoadingIndicator": false,
 
@@ -26,7 +26,7 @@
   "accentColor": "#ffffff",
   "configurableTabs": [
     {
-      "configurationUrl": "<<BaseURL>>/ConfigureTab",
+      "configurationUrl": "https://5b2e-91-132-138-228.ngrok.io/ConfigureTab",
       "canUpdateConfiguration": true,
       "scopes": [
         "groupchat"
@@ -42,7 +42,7 @@
   ],
   "bots": [
     {
-      "botId": "<<Microsoft-APP-ID>>",
+      "botId": "3f4ded50-4461-4859-8ca5-831bfcba232e",
       "scopes": [
         "groupchat"
       ],

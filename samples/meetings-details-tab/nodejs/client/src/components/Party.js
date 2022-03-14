@@ -1,13 +1,13 @@
 import { useState } from "react";
-function Party (props) {
+function Party(props) {
     const [currentVote, setCurrentVote] = useState(props.votes);
     const [personName] = useState(props.personName);
     const [saveDisabled, setSaveDisabled] = useState(true);
 
     const sendPartyUpdate = async (newVotes) => {
         setSaveDisabled(true);
-        
-        const partyInfo = props.partyList.find(x => x.Id === props.Id);
+
+        const partyInfo = props.partyList.find(x => x.id === props.id);
         partyInfo.votes = newVotes;
         fetch("/api/sendPart", {
             method: 'POST',
@@ -23,8 +23,10 @@ function Party (props) {
         setSaveDisabled(false);
     }
 
+    const bgColor = currentVote < 0 ? "lightcoral" : currentVote === 0 ? "lightseagreen" : "";
+
     return (
-        <div className="card agendaCard">
+        <div className="card agendaCard" style={{ backgroundColor: bgColor }}>
             <div className="card-body">
                 <h5 className="card-title">{personName}</h5>
                 <label className="pollLabel" for="option1">Röster:</label><br />

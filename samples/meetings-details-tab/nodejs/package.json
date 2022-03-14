@@ -16,6 +16,7 @@
   "author": "Microsoft",
   "license": "MIT",
   "dependencies": {
+    "@azure/data-tables": "^13.0.1",
     "adaptive-expressions": "^4.15.0",
     "adaptivecards": "^2.10.0",
     "adaptivecards-templating": "^2.2.0",

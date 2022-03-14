@@ -43,7 +43,7 @@ const Agenda = ({ title, option1, option2, Id, IsSend, taskList }) => {
                     <label className="pollLabel" for="option2">{option2}</label><br />
                 </div>
                 <div className="card-footer">
-                    <button type="button" className="btn btn-primary" onClick={() => sendAgenda(title, option1, option2)}>Send</button>
+                    <button type="button" className="btn btn-primary" onClick={() => sendAgenda()}>Öppna röstning</button>
                 </div>
             </div>
         )

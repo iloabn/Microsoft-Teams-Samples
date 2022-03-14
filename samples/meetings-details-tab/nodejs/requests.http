@@ -1,0 +1,26 @@
+POST http://localhost:4001/api/sendAgenda
+Content-Type: application/json
+
+{
+    "taskInfo": {
+        "IsSend": true,
+        "title": "Godkänner årsmötet X?",
+        "option1": "Yes",
+        "option2": "No",
+        "personAnswered": {"Yes":["Fa"], "No":[]}
+    },
+    "taskList": [
+        {
+        "IsSend": true,
+        "title": "Godkänner årsmötet X?",
+        "option1": "Yes",
+        "option2": "No",
+        "personAnswered": {"Yes":["Fa","Fa","Fa"], "No":["Fa"]}
+    },{
+        "title": "En annan fråga som inte är skickad ännu.",
+        "option1": "Yes",
+        "option2": "No",
+        "personAnswered": []
+    }
+    ]
+}
