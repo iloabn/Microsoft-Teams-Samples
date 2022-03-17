@@ -65,6 +65,7 @@ class BotActivityHandler extends TeamsActivityHandler {
         });
 
         this.onMessage(async (context, next) => {
+            console.log("MESSAGE");
             const userName = context.activity.from.name;
             const data = context.activity.value;
             const answer = data.Feedback;

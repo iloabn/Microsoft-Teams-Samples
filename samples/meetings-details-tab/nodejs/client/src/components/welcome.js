@@ -9,7 +9,7 @@ function Welcome() {
     const [partList, setPartList] = useState([]);
 
     const loadPartList = async () => {
-        const response = await fetch("/api/getPartList", {
+        const response = await fetch(process.env.REACT_APP_ApiUrl + "/api/getPartList", {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -26,7 +26,7 @@ function Welcome() {
 
     useEffect(() => {
         const loadAgenda = async () => {
-            const response = await fetch("/api/getAgendaList", {
+            const response = await fetch(process.env.REACT_APP_ApiUrl + "/api/getAgendaList", {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ function Welcome() {
     }, []);
 
     const setAgendaList = (list) => {
-        fetch("/api/setAgendaList", {
+        fetch(process.env.REACT_APP_ApiUrl + "/api/setAgendaList", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -14,7 +14,8 @@ const Config = () => {
 microsoftTeams.settings.setValidityState(true);
 return (
     <div>
-        <div style={{display: "flex", FontSize: 18}}>Press save to continue</div>
+        <div style={{display: "flex", FontSize: 18}}>Tryck på spara för att installera röstning-modulen.</div>
+        <p>You are running this application in <b>{process.env.NODE_ENV}</b> mode</p>
     </div>
 )
 };

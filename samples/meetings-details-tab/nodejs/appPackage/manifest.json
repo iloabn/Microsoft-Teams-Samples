@@ -1,23 +1,23 @@
 {
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.9/MicrosoftTeams.schema.json",
   "manifestVersion": "1.9",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "id": "3f4ded50-4461-4859-8ca5-831bfcba232e",
   "packageName": "com.microsoft.teams.sample.meetingdetailstab",
   "showLoadingIndicator": false,
 
   "developer": {
-    "name": "Microsoft",
+    "name": "Stockholm Pride",
     "websiteUrl": "https://dev.botframework.com",
     "privacyUrl": "https://privacy.microsoft.com",
     "termsOfUseUrl": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/default.aspx"
   },
   "name": {
-    "short": "Details Tab"
+    "short": "Årsmöte"
   },
   "description": {
-    "short": "Details Tab",
-    "full": "Details Tab for Meeting Extensibility"
+    "short": "Årsmöte",
+    "full": "En liten chatt-bot och sida som hjälper till att managera röstning på årsmötet."
   },
   "icons": {
     "outline": "icon-outline.png",
@@ -26,7 +26,7 @@
   "accentColor": "#ffffff",
   "configurableTabs": [
     {
-      "configurationUrl": "https://5b2e-91-132-138-228.ngrok.io/ConfigureTab",
+      "configurationUrl": "https://pridemeeting2022sungleaf.z6.web.core.windows.net/ConfigureTab",
       "canUpdateConfiguration": true,
       "scopes": [
         "groupchat"
@@ -38,7 +38,8 @@
     "messageTeamMembers"
   ],
   "validDomains": [
-    "*.ngrok.io"
+    "*.azurewebsites.net",
+    "*.z6.web.core.windows.net"
   ],
   "bots": [
     {

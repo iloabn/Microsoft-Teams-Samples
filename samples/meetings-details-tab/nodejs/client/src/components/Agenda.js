@@ -3,7 +3,7 @@ const Agenda = ({ title, option1, option2, Id, IsSend, taskList }) => {
     const sendAgenda = () => {
         const taskInfo = taskList.find(x => x.Id === Id);
         taskInfo.IsSend = true;
-        fetch("/api/sendAgenda", {
+        fetch(process.env.REACT_APP_ApiUrl + "/api/sendAgenda", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

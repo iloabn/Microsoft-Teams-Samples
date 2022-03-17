@@ -9,7 +9,7 @@ function Party(props) {
 
         const partyInfo = props.partyList.find(x => x.id === props.id);
         partyInfo.votes = newVotes;
-        fetch("/api/sendPart", {
+        fetch(process.env.REACT_APP_ApiUrl + "/api/sendPart", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

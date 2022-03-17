@@ -3,7 +3,7 @@ const Result = (props) => {
     const [taskInfo, setInfo]= useState(null);
     useEffect(() => {
         const loadAgenda = async () => {
-            const response = await fetch("/api/getAgendaList", {
+            const response = await fetch(process.env.REACT_APP_ApiUrl + "/api/getAgendaList", {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
