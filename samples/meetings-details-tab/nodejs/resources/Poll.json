@@ -5,12 +5,12 @@
     {
 
       "type": "TextBlock",
-      "text": "Provide your Feedback!"
+      "text": "En ny omröstning har startat!"
     },
     {
       "type": "TextBlock",
       "wrap": true,
-      "text": "${title}?"
+      "text": "${title}"
     },
     {
       "type": "Input.ChoiceSet",
@@ -36,7 +36,7 @@
     {
       "type": "Action.Submit",
       "id": "submit",
-      "title": "Submit",
+      "title": "Rösta",
       "data": {
         "Type": "SubmitFeedback",
         "Choice": "${Id}"
