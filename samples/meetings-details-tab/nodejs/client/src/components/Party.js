@@ -1,7 +1,7 @@
 import { useState } from "react";
 function Party(props) {
     const [currentVote, setCurrentVote] = useState(props.votes);
-    const [personName] = useState(props.personName);
+    const [personName] = useState(props.name);
     const [saveDisabled, setSaveDisabled] = useState(true);
 
     const sendPartyUpdate = async (newVotes) => {

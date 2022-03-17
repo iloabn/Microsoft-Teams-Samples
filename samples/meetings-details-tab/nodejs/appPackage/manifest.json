@@ -1,55 +1,56 @@
 {
-  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.9/MicrosoftTeams.schema.json",
-  "manifestVersion": "1.9",
-  "version": "1.0.6",
-  "id": "3f4ded50-4461-4859-8ca5-831bfcba232e",
-  "packageName": "com.microsoft.teams.sample.meetingdetailstab",
-  "showLoadingIndicator": false,
-
-  "developer": {
-    "name": "Stockholm Pride",
-    "websiteUrl": "https://dev.botframework.com",
-    "privacyUrl": "https://privacy.microsoft.com",
-    "termsOfUseUrl": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/default.aspx"
-  },
-  "name": {
-    "short": "Årsmöte"
-  },
-  "description": {
-    "short": "Årsmöte",
-    "full": "En liten chatt-bot och sida som hjälper till att managera röstning på årsmötet."
-  },
-  "icons": {
-    "outline": "icon-outline.png",
-    "color": "icon-color.png"
-  },
-  "accentColor": "#ffffff",
-  "configurableTabs": [
-    {
-      "configurationUrl": "https://pridemeeting2022sungleaf.z6.web.core.windows.net/ConfigureTab",
-      "canUpdateConfiguration": true,
-      "scopes": [
-        "groupchat"
-      ]
-    }
-  ],
-  "permissions": [
-    "identity",
-    "messageTeamMembers"
-  ],
-  "validDomains": [
-    "*.azurewebsites.net",
-    "*.z6.web.core.windows.net"
-  ],
-  "bots": [
-    {
-      "botId": "3f4ded50-4461-4859-8ca5-831bfcba232e",
-      "scopes": [
-        "groupchat"
-      ],
-      "needsChannelSelector": false,
-      "isNotificationOnly": false,
-      "supportsFiles": false
-    }
-  ]
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.12/MicrosoftTeams.schema.json",
+    "version": "1.0.10",
+    "manifestVersion": "1.12",
+    "id": "962dcf6e-7b79-490d-bda0-8a03e121afa8",
+    "packageName": "com.package.name",
+    "name": {
+        "short": "Rösträknare",
+        "full": "Rösträknare för Stockholm Pride årsmöte 2022"
+    },
+    "developer": {
+        "name": "Stockholm Pride",
+        "mpnId": "",
+        "websiteUrl": "https://www.stockholmpride.org",
+        "privacyUrl": "https://www.stockholmpride.org/gdpr/",
+        "termsOfUseUrl": "https://www.stockholmpride.org/gdpr/"
+    },
+    "description": {
+        "short": "Rösträknare för Stockholm Pride årsmöte 2022",
+        "full": "Rösträknaren hjälper till att hålla koll på hur många röster de olika medlemmarna har och räknar rösterna automatiskt."
+    },
+    "icons": {
+        "outline": "outline.png",
+        "color": "color.png"
+    },
+    "accentColor": "#FFFFFF",
+    "configurableTabs": [
+        {
+            "configurationUrl": "https://pridemeeting2022sungleaf.z6.web.core.windows.net/configuretab",
+            "canUpdateConfiguration": true,
+            "scopes": [
+                "groupchat"
+            ]
+        }
+    ],
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": [
+        "pridemeeting2022sungleaf.z6.web.core.windows.net",
+        "*.z6.web.core.windows.net"
+    ],
+    "bots": [
+        {
+            "botId": "4d9f47da-ac63-4c54-a9f7-af45607ac3d5",
+            "scopes": [
+                "groupchat"
+            ],
+            "isNotificationOnly": false,
+            "supportsCalling": false,
+            "supportsVideo": false,
+            "supportsFiles": false
+        }
+    ]
 }

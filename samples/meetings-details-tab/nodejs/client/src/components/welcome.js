@@ -7,9 +7,10 @@ import { v4 as uuidv4 } from "uuid";
 function Welcome() {
     const [agendaList, setAgenda] = useState([]);
     const [partList, setPartList] = useState([]);
+    const [conversationId, setConversationId] = useState("");
 
-    const loadPartList = async () => {
-        const response = await fetch(process.env.REACT_APP_ApiUrl + "/api/getPartList", {
+    const loadPartList = async (conId) => {
+        const response = await fetch(process.env.REACT_APP_ApiUrl + "/api/getPartList?conversationId=" + conId, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -25,30 +26,37 @@ function Welcome() {
     }
 
     useEffect(() => {
-        const loadAgenda = async () => {
-            const response = await fetch(process.env.REACT_APP_ApiUrl + "/api/getAgendaList", {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+        microsoftTeams.initialize(() => {
+            microsoftTeams.getContext((context) => {
+                const encodedChatId = encodeURIComponent(context.chatId);
+                console.log(context.chatId);
+                const loadAgenda = async () => {
+                    const response = await fetch(process.env.REACT_APP_ApiUrl + "/api/getAgendaList?conversationId=" + encodedChatId, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    const textData = await response.text();
+                    if (textData.length) {
+                        try {
+                            const data = JSON.parse(textData);
+                            setAgenda(data);
+                        } catch (error) { };
+                    }
+                };
+                loadAgenda();
+                console.log("AGENDA LOADED")
+                loadPartList(encodedChatId);
+                setConversationId(encodedChatId);
+                const comInterval = setInterval(() => loadPartList(encodedChatId), 10 * 1000);
+                return () => clearInterval(comInterval)
             });
-            const textData = await response.text();
-            if (textData.length) {
-                try {
-                    const data = JSON.parse(textData);
-                    setAgenda(data);
-                } catch (error) { };
-            }
-        };
-        loadAgenda();
-        console.log("AGENDA LOADED")
-        loadPartList();
-        const comInterval = setInterval(loadPartList, 10 * 1000);
-        return () => clearInterval(comInterval)
+        });
     }, []);
 
-    const setAgendaList = (list) => {
-        fetch(process.env.REACT_APP_ApiUrl + "/api/setAgendaList", {
+    const setAgendaList = (list, conId) => {
+        fetch(process.env.REACT_APP_ApiUrl + "/api/setAgendaList?conversationId=" + conId, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -56,14 +64,17 @@ function Welcome() {
             body: JSON.stringify(list),
         })
     }
-    microsoftTeams.initialize();
+    // microsoftTeams.initialize();
+
     const submitHandler = (err, result) => {
         if (!result || !result.title || !result.option1 || !result.option2)
             return;
-        const taskInfo = { ...result, Id: uuidv4() };
+        const questionId = uuidv4();
+        console.log("SET AGENDA CON: ", decodeURIComponent(conversationId));
+        const taskInfo = { ...result, Id: questionId, rowKey: questionId, partitionKey: decodeURIComponent(conversationId) };
         const list = [...agendaList, taskInfo];
         setAgenda(list);
-        setAgendaList(list);
+        setAgendaList(list, conversationId);
     };
     const openTaskModule = () => {
         const baseUrl = `https://${window.location.hostname}:${window.location.port}`;

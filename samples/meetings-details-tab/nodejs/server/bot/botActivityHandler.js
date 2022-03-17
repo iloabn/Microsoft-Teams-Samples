@@ -41,20 +41,24 @@ class BotActivityHandler extends TeamsActivityHandler {
                 const addedMembers = newPartList.filter(x => context.activity.membersAdded.find(m => m.id === x.id));
 
                 const tableClient = TableClient.fromConnectionString(process.env.TABLE_CONNECTION_STRING, "voters");
-                const newVoters = addedMembers.map((x) => new Voter(x.id, x.personName, x.votes, context.activity.conversation.id));
+                const newVoters = newPartList.map((x) => new Voter(x.id, x.personName, x.votes, context.activity.conversation.id));
 
                 for (let voter of newVoters) {
-                    tableClient.upsertEntity(voter);
+                    console.log("ADD ", voter.id);
+                    try {
+                        await tableClient.createEntity(voter);
+                        console.log("ADDED:", )
+                    } catch(error) {
+                        console.log("ERROR ADDING: ", error);
+                    }
                 }
-
-                console.log("ADDED: ", JSON.stringify(addedMembers));
             }
 
             if (context.activity.membersRemoved) {
-                const removedMembers = currentPartList.filter(x => context.activity.membersRemoved.find(m => m.id === x.id))
-                    .map((removed) => { removed.votes = -1; return removed; });
-                console.log("REMOVED: ", JSON.stringify(removedMembers));
-                currentPartList = [...currentPartList.filter(x => !context.activity.membersRemoved.find(m => m.id === x.id)), ...removedMembers];
+                // const removedMembers = currentPartList.filter(x => context.activity.membersRemoved.find(m => m.id === x.id))
+                //     .map((removed) => { removed.votes = -1; return removed; });
+                console.log("REMOVED: ", JSON.stringify(context.activity.membersRemoved));
+                // currentPartList = [...currentPartList.filter(x => !context.activity.membersRemoved.find(m => m.id === x.id)), ...removedMembers];
             }
 
             /**
