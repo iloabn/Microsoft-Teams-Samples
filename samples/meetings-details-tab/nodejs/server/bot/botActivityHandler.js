@@ -48,8 +48,6 @@ class BotActivityHandler extends TeamsActivityHandler {
                 }
 
                 console.log("ADDED: ", JSON.stringify(addedMembers));
-                currentPartList = [...currentPartList, ...addedMembers];
-                console.log("NEW LIST: ", JSON.stringify(currentPartList));
             }
 
             if (context.activity.membersRemoved) {
