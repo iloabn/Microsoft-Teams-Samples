@@ -107,6 +107,7 @@ class BotActivityHandler extends TeamsActivityHandler {
       await voteTableClient.upsertEntity({
         partitionKey: data.Choice,
         rowKey: personId,
+        selection: answer,
         votes: (await personTableClient.getEntity(conId, personId)).votes
       });
 
@@ -115,12 +116,19 @@ class BotActivityHandler extends TeamsActivityHandler {
       console.log("Reply to: ", context.activity.replyToId);
 
       //// FIX THIS SO THAT A RESULT POST IS POSTED
-    //   const card = createAdaptiveCard(
-    //     "Result.json",
-    //     taskInfo,
-    //     percentOption1,
-    //     percentOption2
-    //   );
+
+      const votes = await personTableClient.listEntities({queryOptions: {
+            filter: `PartitionKey eq '${data.Choice}'`
+        }});
+
+        // const group = votes.reduce(());
+
+      const card = createAdaptiveCard(
+        "Result.json",
+        taskInfo,
+        percentOption1,
+        percentOption2
+      );
 
     //   const previousActivityId = store.getItem("lastActivityId");
     //   console.log(previousActivityId);
