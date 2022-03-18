@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 function Party(props) {
     const [currentVote, setCurrentVote] = useState(props.votes);
     const [personName] = useState(props.name);
     const [saveDisabled, setSaveDisabled] = useState(true);
+
+    useEffect(() => {
+        setCurrentVote(props.votes);
+    }, [props.votes])
 
     const sendPartyUpdate = async (newVotes) => {
         setSaveDisabled(true);
