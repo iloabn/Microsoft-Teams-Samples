@@ -105,9 +105,8 @@ class BotActivityHandler extends TeamsActivityHandler {
       );
 
       await voteTableClient.upsertEntity({
-        partitionKey: conId,
-        rowKey: data.Choice,
-        person: personId,
+        partitionKey: data.Choice,
+        rowKey: personId,
         votes: (await personTableClient.getEntity(conId, personId)).votes
       });
 
