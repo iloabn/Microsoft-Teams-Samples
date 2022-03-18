@@ -6,7 +6,8 @@
           "type": "TextBlock",
           "text": "Pågående röstning",
           "size": "ExtraLarge",
-          "color": "Accent"
+          "color": "Accent",
+          "wrap": true
       },
       {
           "type": "TextBlock",
