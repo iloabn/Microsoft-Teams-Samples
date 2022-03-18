@@ -22,7 +22,7 @@ const Detail = () => {
                             </label>
                         </td>
                         <td>
-                            <input type="text" placeholder="Add Title" id ="title"name="title" size="30"/>
+                            <input type="text" placeholder="Fråga" id ="title"name="title" size="30"/>
                         </td>
                     </tr>
                     <tr>
@@ -32,7 +32,7 @@ const Detail = () => {
                             </label>
                         </td>
                         <td>
-                            <input type="text" placeholder="Add choice 1" id="option1" name="option1" size="30"/>
+                            <input type="text" placeholder="" id="option1" name="option1" size="30"/>
                         </td>
                    </tr>
                    <tr>
@@ -42,13 +42,13 @@ const Detail = () => {
                             </label>
                         </td>
                         <td>
-                            <input type="text" placeholder="Add choice 2" id="option2" name="option2" size="30"/>
+                            <input type="text" placeholder="" id="option2" name="option2" size="30"/>
                         </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
-                        <input type="button" class="btn btn-primary" value="Create" onClick={() =>validateForm()}/>
+                        <input type="button" class="btn btn-primary" value="Skapa" onClick={() =>validateForm()}/>
                     </td>
                 </tr>
                 </table>

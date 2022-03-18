@@ -43,6 +43,17 @@ class BotActivityHandler extends TeamsActivityHandler {
           process.env.TABLE_CONNECTION_STRING,
           "voters"
         );
+
+        const existingVoters = newPartList.map(
+          (x) =>
+            new Voter(
+              x.id,
+              x.personName,
+              x.votes,
+              context.activity.conversation.id
+            )
+        );
+
         const newVoters = addedMembers.map(
           (x) =>
             new Voter(
@@ -57,9 +68,18 @@ class BotActivityHandler extends TeamsActivityHandler {
           console.log("ADD ", voter.id);
           try {
             await tableClient.upsertEntity(voter);
-            console.log("ADDED:");
+            console.log("ADDED: ", voter.name);
           } catch (error) {
             console.log("ERROR ADDING: ", error);
+          }
+        }
+
+        for (let voter of existingVoters) {
+          try {
+            await tableClient.createEntity(voter);
+            console.log("ADDED: ", voter.name);
+          } catch (error) {
+            console.log("FAILED TO ADD: ", voter.name);
           }
         }
       }
@@ -75,7 +95,7 @@ class BotActivityHandler extends TeamsActivityHandler {
           "voters"
         );
 
-        for(const member of context.activity.membersRemoved) {
+        for (const member of context.activity.membersRemoved) {
           await tableClient.upsertEntity({
             partitionKey: context.activity.conversation.id,
             rowKey: member.id,

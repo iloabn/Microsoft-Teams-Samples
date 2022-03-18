@@ -51,7 +51,7 @@ function Welcome() {
                 console.log("AGENDA LOADED")
                 loadPartList(encodedChatId);
                 setConversationId(encodedChatId);
-                const partInterval = setInterval(() => loadPartList(encodedChatId), 60 * 1000);
+                const partInterval = setInterval(() => loadPartList(encodedChatId), 20 * 1000);
                 const agendaInterval = setInterval(() => loadAgenda(encodedChatId), 30 * 1000);
                 return () => {
                     clearInterval(partInterval);
