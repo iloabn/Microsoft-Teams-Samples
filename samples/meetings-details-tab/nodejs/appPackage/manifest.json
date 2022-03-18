@@ -1,6 +1,6 @@
 {
     "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.12/MicrosoftTeams.schema.json",
-    "version": "1.0.10",
+    "version": "1.0.11",
     "manifestVersion": "1.12",
     "id": "962dcf6e-7b79-490d-bda0-8a03e121afa8",
     "packageName": "com.package.name",
@@ -20,8 +20,8 @@
         "full": "Rösträknaren hjälper till att hålla koll på hur många röster de olika medlemmarna har och räknar rösterna automatiskt."
     },
     "icons": {
-        "outline": "outline.png",
-        "color": "color.png"
+        "outline": "icon-outline.png",
+        "color": "icon-color.png"
     },
     "accentColor": "#FFFFFF",
     "configurableTabs": [

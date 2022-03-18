@@ -1,0 +1,60 @@
+{
+    "type": "AdaptiveCard",
+    "version": "1.2",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Resultat",
+            "color": "Good",
+            "size": "ExtraLarge"
+        },
+        {
+            "type": "TextBlock",
+            "wrap": true,
+            "text": "${title}"
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "wrap": true,
+                    "text": "${option1}",
+                    "weight": "Bolder",
+                    "size": "Large"
+                },
+                {
+                    "type": "TextBlock",
+                    "wrap": true,
+                    "text": "${percentoption1}% av rösterna",
+                    "horizontalAlignment": "Left",
+                    "color": "Accent",
+                    "size": "Medium"
+                }
+            ],
+            "$when": "${percentoption1 > 50}"
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "wrap": true,
+                    "text": "${option2}",
+                    "weight": "Bolder",
+                    "size": "Large"
+                },
+                {
+                    "type": "TextBlock",
+                    "wrap": true,
+                    "text": "${percentoption2}% av rösterna",
+                    "horizontalAlignment": "Left",
+                    "color": "Accent",
+                    "size": "Medium"
+                }
+            ],
+            "$when": "${percentoption2 > 50}"
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+}

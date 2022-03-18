@@ -9,7 +9,7 @@ const sendAgenda = async (req) => {
   const data = req.body;
 
   const taskInfo = data.taskInfo;
-  
+
   const conId = taskInfo.partitionKey;
 
   const tableClient = TableClient.fromConnectionString(process.env.TABLE_CONNECTION_STRING, "voters");
@@ -22,12 +22,12 @@ const sendAgenda = async (req) => {
     result.push(entity);
   }
 
-  taskInfo.maxVotes = result.reduce((total, part) => total + parseInt(part.votes), 0)
+  taskInfo.maxVotes = result.reduce((total, part) => total + parseInt(Math.max(0,part.votes)), 0)
 
   console.log("DATA: ", taskInfo);
 
   const questionsTableClient = TableClient.fromConnectionString(process.env.TABLE_CONNECTION_STRING, "questions");
-  questionsTableClient.upsertEntity(taskInfo);
+  await questionsTableClient.upsertEntity(taskInfo);
 
   const conversationID = conId;
   const serviceUrl = "https://smba.trafficmanager.net/emea/";
@@ -37,34 +37,55 @@ const sendAgenda = async (req) => {
   const adaptiveCard = createAdaptiveCard('Poll.json', data.taskInfo)
   try {
     MicrosoftAppCredentials.trustServiceUrl(serviceUrl);
-    await client.conversations.sendToConversation(conversationID,
+    const result = await client.conversations.sendToConversation(conversationID,
       {
         type: 'message',
         from: { id: process.env.BotId },
         attachments: [adaptiveCard]
       });
+
+    taskInfo.questionActivityId = result.id;
+    await questionsTableClient.upsertEntity(taskInfo);
+
   }
   catch (e) {
     console.log(e.message);
   }
 }
+
 const getAgendaList = async (req, res) => {
   const conId = req.query.conversationId;
 
   const tableClient = TableClient.fromConnectionString(process.env.TABLE_CONNECTION_STRING, "questions");
+  const votesTableClient = TableClient.fromConnectionString(process.env.TABLE_CONNECTION_STRING, "votes");
 
-  const entities = tableClient.listEntities({
+  const questionsCursor = tableClient.listEntities({
     queryOptions: { filter: `PartitionKey eq '${conId}'` }
   });
   console.log(`PartitionKey eq '${conId}'`);
 
   const result = [];
-  for await (const entity of entities) {
-    result.push(entity);
+  for await (const question of questionsCursor) {
+    const votesOnQuestionCursor = votesTableClient.listEntities({ queryOptions: { filter: `PartitionKey eq '${question.rowKey}'`}});
+
+    question.option1Votes = 0;
+    question.option2Votes = 0;
+
+    for await(const vote of votesOnQuestionCursor) {
+      if(question.option1 === vote.selection) {
+        question.option1Votes += parseInt(vote.votes);
+      } else if(question.option2 === vote.selection) {
+        question.option2Votes += parseInt(vote.votes);
+      }
+    }
+
+    result.push(question);
   }
 
+  console.log("GET AGENDA LIST: ", JSON.stringify(result));
   await res.send(result);
 }
+
 const setAgendaList = async (req, res) => {
   // store.setItem("agendaList", req.body);
   console.log("SET AGENDA LIST");
@@ -101,12 +122,6 @@ const setPartList = async (req, res) => {
   entityToUpdate.votes = req.body.votes;
 
   await tableClient.upsertEntity(entityToUpdate);
-  // const partyList = store.getItem("partList");
-  // const indexOfParty = partyList.findIndex((x) => x.id == req.body.id);
-  // partyList[indexOfParty].votes = req.body.votes;
-
-  // console.log(JSON.stringify(partyList));
-  // store.setItem("partList", partyList);
   res.status(200).end();
 };
 

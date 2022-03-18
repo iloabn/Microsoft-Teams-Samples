@@ -38,7 +38,7 @@ const Result = (props) => {
     }else {
         return (
             <div>
-                Loading......
+                Loading...
             </div>
         )
     }

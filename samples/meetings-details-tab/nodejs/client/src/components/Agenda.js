@@ -1,5 +1,5 @@
 import * as microsoftTeams from "@microsoft/teams-js";
-const Agenda = ({ title, option1, option2, Id, IsSend, taskList }) => {
+const Agenda = ({ title, option1, option2, Id, IsSend, option1Votes, option2Votes, maxVotes, taskList }) => {
     const sendAgenda = () => {
         const taskInfo = taskList.find(x => x.Id === Id);
         taskInfo.IsSend = true;
@@ -47,23 +47,18 @@ const Agenda = ({ title, option1, option2, Id, IsSend, taskList }) => {
                 </div>
             </div>
         )
-    } else {
-        const taskInfo = taskList.find(x => x.Id === Id);
-        const { title, option1, option2, personAnswered, maxVotes } = taskInfo;
-        const option1Answered = personAnswered && personAnswered[option1] ? personAnswered[option1].length : 0;
-        const option2Answered = personAnswered && personAnswered[option2] ? personAnswered[option2].length : 0;
-
+    } else {        
         const total = maxVotes;
-        const percentOption1 = total === 0 ? 0 : parseInt((option1Answered * 100) / total);
-        const percentOption2 = total === 0 ? 0 : parseInt((option2Answered * 100) / total);
+        const percentOption1 = total === 0 ? 0 : parseInt((option1Votes * 100) / total);
+        const percentOption2 = total === 0 ? 0 : parseInt((option2Votes * 100) / total);
 
         return (
             <div class="card agendaCard">
                 <div class="card-body">
                     <h5 class="card-title">{title}</h5>
                     <div className="voting-grid">
-                        <span class="option1">{option1} ({option1Answered})</span>
-                        <span class="option2">{option2} ({option2Answered})</span>
+                        <span class="option1">{option1} ({option1Votes})</span>
+                        <span class="option2">{option2} ({option2Votes})</span>
                         <div className="resultpercentage">
                             <span class="percentage1" style={{ width: `${percentOption1}%` }}>&ensp;</span>
                             <span class="percentagenone" style={{ width: `${(100 - percentOption1 - percentOption2)}%` }}>&ensp;</span>
@@ -71,9 +66,9 @@ const Agenda = ({ title, option1, option2, Id, IsSend, taskList }) => {
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
+                {/* <div class="card-footer">
                     <button type="button" class="btn btn-primary btnResult" onClick={() => openResultModule()}>Results</button>
-                </div>
+                </div> */}
             </div>
         )
     }

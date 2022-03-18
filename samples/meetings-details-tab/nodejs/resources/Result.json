@@ -2,56 +2,63 @@
   "type": "AdaptiveCard",
   "version": "1.2",
   "body": [
-    {
-
-      "type": "TextBlock",
-      "text": "Result"
-    },
-    {
-      "type": "TextBlock",
-      "wrap": true,
-      "text": "${title}?"
-    },
-    {
-      "type": "TextBlock",
-      "wrap": true,
-      "text": "${option1}",
-      "weight": "Bolder"
-    },
-    {
-      "type": "TextBlock",
-      "wrap": true,
-      "text": "${percentoption1}% has answered",
-      "horizontalAlignment": "Right",
-      "color": "Accent",
-      "size": "small"
-    },
-    {
-      "type": "TextBlock",
-      "wrap": true,
-      "text": "${option2}",
-      "weight": "Bolder"
-    },
-    {
-      "type": "TextBlock",
-      "wrap": true,
-      "text": "${percentoption2}% has answered",
-      "horizontalAlignment": "Right",
-      "color": "Accent",
-      "size": "small"
-    }
-  ],
-  "actions": [
-    {
-      "type": "Action.Submit",
-      "id": "result",
-      "title": "Results",
-      "data": {
-        "Id": "${Id}",
-        "msteams": {
-          "type": "task/fetch"
-        }
+      {
+          "type": "TextBlock",
+          "text": "Pågående röstning",
+          "size": "ExtraLarge",
+          "color": "Accent"
+      },
+      {
+          "type": "TextBlock",
+          "wrap": true,
+          "text": "${title}"
+      },
+      {
+          "type": "ColumnSet",
+          "columns": [
+              {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                      {
+                          "type": "TextBlock",
+                          "wrap": true,
+                          "text": "${option1}",
+                          "weight": "Bolder"
+                      },
+                      {
+                          "type": "TextBlock",
+                          "text": "${percentoption1}% av rösterna",
+                          "horizontalAlignment": "Left",
+                          "color": "Accent",
+                          "size": "Small",
+                          "wrap": true
+                      }
+                  ]
+              },
+              {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                      {
+                          "type": "TextBlock",
+                          "wrap": true,
+                          "text": "${option2}",
+                          "weight": "Bolder",
+                          "horizontalAlignment": "Right"
+                      },
+                      {
+                          "type": "TextBlock",
+                          "wrap": true,
+                          "text": "${percentoption2}% av rösterna",
+                          "horizontalAlignment": "Right",
+                          "color": "Accent",
+                          "size": "Small"
+                      }
+                  ]
+              }
+          ]
       }
-    }
-  ]
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
 }

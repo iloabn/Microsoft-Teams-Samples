@@ -19,10 +19,7 @@ class BotActivityHandler extends TeamsActivityHandler {
   constructor() {
     super();
     this.onConversationUpdate(async (context, next) => {
-      console.log("START");
       console.log(JSON.stringify(context.activity));
-
-      console.log("2");
 
       const client = new ConnectorClient(credentials, {
         baseUri: context.activity.serviceUrl,
@@ -30,27 +27,23 @@ class BotActivityHandler extends TeamsActivityHandler {
       const members = await client.conversations.getConversationMembers(
         context.activity.conversation.id
       );
-      console.log("3");
-      console.log(JSON.stringify(members));
-
-      console.log("4");
 
       const newPartList = members.map((part) => {
         return { id: part.id, personName: part.name, votes: 0 };
       });
-
-      console.log("5");
 
       if (context.activity.membersAdded) {
         const addedMembers = newPartList.filter((x) =>
           context.activity.membersAdded.find((m) => m.id === x.id)
         );
 
+        console.log("ADDED MEMBERS: ", JSON.stringify(addedMembers));
+
         const tableClient = TableClient.fromConnectionString(
           process.env.TABLE_CONNECTION_STRING,
           "voters"
         );
-        const newVoters = newPartList.map(
+        const newVoters = addedMembers.map(
           (x) =>
             new Voter(
               x.id,
@@ -63,7 +56,7 @@ class BotActivityHandler extends TeamsActivityHandler {
         for (let voter of newVoters) {
           console.log("ADD ", voter.id);
           try {
-            await tableClient.createEntity(voter);
+            await tableClient.upsertEntity(voter);
             console.log("ADDED:");
           } catch (error) {
             console.log("ERROR ADDING: ", error);
@@ -72,18 +65,26 @@ class BotActivityHandler extends TeamsActivityHandler {
       }
 
       if (context.activity.membersRemoved) {
-        // const removedMembers = currentPartList.filter(x => context.activity.membersRemoved.find(m => m.id === x.id))
-        //     .map((removed) => { removed.votes = -1; return removed; });
         console.log(
           "REMOVED: ",
           JSON.stringify(context.activity.membersRemoved)
         );
-        // currentPartList = [...currentPartList.filter(x => !context.activity.membersRemoved.find(m => m.id === x.id)), ...removedMembers];
-      }
 
-      /**
-       * [{"id":"29:1hWH7TXQEbNDxR2n0CVDDIimfWX0yS4wrArQAM279NENfxyOkRrWcA6sjOFvUFtpnyDg3DPUC-5pmQZ4knB5gfg","name":"Fabian Miiro","objectId":"51a7c595-4695-4e42-bdce-0103141d1ccf","givenName":"Fabian","surname":"Miiro","email":"fabian.miiro@stockholmpride.org","userPrincipalName":"fabian.miiro@stockholmpride.org","tenantId":"f06e04fb-560b-4235-a626-0d4b87a472b3","userRole":"user"},{"id":"29:1_WId0404nVw7sL8XKjYSd8omxTLDY4eZBApW9NptwkjhN77HqxjWmXnqAqP957Wr6VITNfNbrRg2H4vWPQeUUA","name":"Someone else (Guest)","tenantId":"f06e04fb-560b-4235-a626-0d4b87a472b3","userRole":"anonymous"}]
-       */
+        const tableClient = TableClient.fromConnectionString(
+          process.env.TABLE_CONNECTION_STRING,
+          "voters"
+        );
+
+        for(const member of context.activity.membersRemoved) {
+          await tableClient.upsertEntity({
+            partitionKey: context.activity.conversation.id,
+            rowKey: member.id,
+            id: member.id,
+            name: member.name,
+            votes: -1
+          });
+        }
+      }
     });
 
     this.onMessage(async (context, next) => {
@@ -104,6 +105,13 @@ class BotActivityHandler extends TeamsActivityHandler {
         "voters"
       );
 
+      const questionTableClient = TableClient.fromConnectionString(
+        process.env.TABLE_CONNECTION_STRING,
+        "questions"
+      );
+
+      const currentQuestion = await questionTableClient.getEntity(conId, data.Choice);
+
       await voteTableClient.upsertEntity({
         partitionKey: data.Choice,
         rowKey: personId,
@@ -111,35 +119,52 @@ class BotActivityHandler extends TeamsActivityHandler {
         votes: (await personTableClient.getEntity(conId, personId)).votes
       });
 
-      console.log("Activity value ", JSON.stringify(context.activity));
-      console.log("User: ", context.activity.from);
-      console.log("Reply to: ", context.activity.replyToId);
+      const votesCursor = await voteTableClient.listEntities({
+        queryOptions: {
+          filter: `PartitionKey eq '${data.Choice}'`
+        }
+      });
 
-      //// FIX THIS SO THAT A RESULT POST IS POSTED
+      const votes = [];
+      for await (const vote of votesCursor) {
+        votes.push(vote);
+      }
+      console.log("DATA ", JSON.stringify(data));
 
-      const votes = await personTableClient.listEntities({queryOptions: {
-            filter: `PartitionKey eq '${data.Choice}'`
-        }});
+      console.log("VOTES ", JSON.stringify(votes));
 
-        // const group = votes.reduce(());
+      const group = votes.reduce((acc, vote) => {
+        const key = vote.selection;
+        acc[key] += parseInt(vote.votes);
+        return acc;
+      }, { [currentQuestion.option1]: 0, [currentQuestion.option2]: 0 });
+
+      console.log("GROUPS ", group);
+
+      let cardTemplate = "Result.json";
+      const maxVotes = parseInt(currentQuestion.maxVotes);
+      if (group[currentQuestion.option1] > (maxVotes / 2) || group[currentQuestion.option2] > (maxVotes / 2)) {
+        cardTemplate = "FinishedResult.json";
+        await context.deleteActivity(currentQuestion.questionActivityId);
+      }
 
       const card = createAdaptiveCard(
-        "Result.json",
-        taskInfo,
-        percentOption1,
-        percentOption2
+        cardTemplate,
+        currentQuestion,
+        (100 * group[currentQuestion.option1]) / maxVotes,
+        (100 * group[currentQuestion.option2]) / maxVotes
       );
 
-    //   const previousActivityId = store.getItem("lastActivityId");
-    //   console.log(previousActivityId);
-    //   if (previousActivityId) {
-    //     const message = MessageFactory.attachment(card);
-    //     message.id = previousActivityId;
-    //     await context.updateActivity(message);
-    //   } else {
-    //     const result = await context.sendActivity({ attachments: [card] });
-    //     store.setItem("lastActivityId", result.id);
-    //   }
+      if (currentQuestion.resultActivityId) {
+        const message = MessageFactory.attachment(card);
+        message.id = currentQuestion.resultActivityId;
+        await context.updateActivity(message);
+      } else {
+        const result = await context.sendActivity({ attachments: [card] });
+        console.log("CARD RESULT: ", JSON.stringify(result));
+        currentQuestion.resultActivityId = result.id;
+        await questionTableClient.upsertEntity(currentQuestion);
+      }
     });
   }
 

@@ -25,32 +25,38 @@ function Welcome() {
         }
     }
 
+    const loadAgenda = async (conId) => {
+        const response = await fetch(process.env.REACT_APP_ApiUrl + "/api/getAgendaList?conversationId=" + conId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        const textData = await response.text();
+        if (textData.length) {
+            try {
+                const data = JSON.parse(textData);
+                setAgenda(data);
+            } catch (error) { };
+        }
+    };
+
     useEffect(() => {
         microsoftTeams.initialize(() => {
             microsoftTeams.getContext((context) => {
                 const encodedChatId = encodeURIComponent(context.chatId);
                 console.log(context.chatId);
-                const loadAgenda = async () => {
-                    const response = await fetch(process.env.REACT_APP_ApiUrl + "/api/getAgendaList?conversationId=" + encodedChatId, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
-                    const textData = await response.text();
-                    if (textData.length) {
-                        try {
-                            const data = JSON.parse(textData);
-                            setAgenda(data);
-                        } catch (error) { };
-                    }
-                };
-                loadAgenda();
+                
+                loadAgenda(encodedChatId);
                 console.log("AGENDA LOADED")
                 loadPartList(encodedChatId);
                 setConversationId(encodedChatId);
-                const comInterval = setInterval(() => loadPartList(encodedChatId), 10 * 1000);
-                return () => clearInterval(comInterval)
+                const partInterval = setInterval(() => loadPartList(encodedChatId), 10 * 1000);
+                const agendaInterval = setInterval(() => loadAgenda(encodedChatId), 30 * 1000);
+                return () => {
+                    clearInterval(partInterval);
+                    clearInterval(agendaInterval);
+                }
             });
         });
     }, []);
@@ -100,6 +106,7 @@ function Welcome() {
     return (
         <>
             <h1>Välkommen rösträknare!</h1>
+            <h2>Totalt finns det { partList && partList.reduce((res, part) => res += part.votes > 0 ? parseInt(part.votes) : 0, 0) } röster</h2>
             <div>
                 <button type="button" id="btnAddAgenda" className="btn btn-outline-info" onClick={() => openTaskModule()}>Skapa ny röstning</button>
 
