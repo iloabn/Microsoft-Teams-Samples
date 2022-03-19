@@ -1,5 +1,4 @@
 const configuration = require('dotenv').config();
-const store = require('../services/store')
 const { createAdaptiveCard } = require('../services/AdaptiveCardService')
 const { ConnectorClient, MicrosoftAppCredentials } = require('botframework-connector');
 const { TableClient } = require("@azure/data-tables");
@@ -87,7 +86,6 @@ const getAgendaList = async (req, res) => {
 }
 
 const setAgendaList = async (req, res) => {
-  // store.setItem("agendaList", req.body);
   console.log("SET AGENDA LIST");
   console.log(req.body);
   const tableClient = TableClient.fromConnectionString(process.env.TABLE_CONNECTION_STRING, "questions");

@@ -70,7 +70,6 @@ function Welcome() {
             body: JSON.stringify(list),
         })
     }
-    // microsoftTeams.initialize();
 
     const submitHandler = (err, result) => {
         if (!result || !result.title || !result.option1 || !result.option2)

@@ -6,7 +6,6 @@ const {
   ConnectorClient,
   MicrosoftAppCredentials,
 } = require("botframework-connector");
-const store = require("../services/store");
 const { createAdaptiveCard } = require("../services/AdaptiveCardService");
 const { TableClient } = require("@azure/data-tables");
 const Voter = require("../models/Voter");
